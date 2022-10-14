@@ -23,7 +23,7 @@ def main():
 
 def run(out, err, args):
     fname = what_aniv()["aniversarios"]
-    print(f"# fname: '{fname}'")
+    #print(f"# fname: '{fname}'")
     param = args
     if not param:
         param = [fname]
