@@ -1,7 +1,10 @@
-#-*- coding: utf-8 -*-
-# aniversarios.py  (c)2021  Henrique Moreira
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+#
+# (c) 2021..2025  Henrique Moreira
 
-"""
+""" aniversarios.py  (c) 2021..2025  Henrique Moreira
+
 aniversarios - leitor de aniversarios.
 Basic Libre/Excel reader (using filing.xcelent 'openpyxl' wrapper).
 """
@@ -13,8 +16,8 @@ import os
 from os import environ
 import datetime
 import openpyxl
-import waxpage.redit as redit
-import filing.xcelent as xcelent
+import filing.xcelent
+from waxpage.redit import char_map
 
 
 def main():
@@ -35,9 +38,9 @@ def dump_aniv(out, err, fname:str) -> int:
     print("# reading:", fname)
     names = list()
     wbk = openpyxl.load_workbook(fname)
-    libre = xcelent.Xcel(wbk)
+    libre = filing.xcelent.Xcel(wbk)
     sheet = libre.get_sheet(1)
-    table = xcelent.Xsheet(sheet)
+    table = filing.xcelent.Xsheet(sheet)
     idx = 0
     for row in table.rows:
         idx += 1
@@ -71,7 +74,7 @@ def simpler(astr, default="") -> str:
     if isinstance(astr, (datetime.date, datetime.datetime)):
         new = f"{astr.day:02}-{astr.month:02}-{astr.year:04}"
         return new
-    return redit.char_map.simpler_ascii(astr)
+    return char_map.simpler_ascii(astr)
 
 def what_aniv() -> dict:
     """ Returns dictionary from ~/.config/misc.conf
