@@ -31,41 +31,50 @@ def run(out, err, args):
     if not param:
         param = [fname]
     for name in param:
-        dump_aniv(out, err, name)
+        dump_aniv(out, err, name, "aniversarios.txt")
     return 0
 
-def dump_aniv(out, err, fname:str) -> int:
+def dump_aniv(out, err, fname:str, outname:str="") -> int:
     print("# reading:", fname)
     names = list()
     wbk = openpyxl.load_workbook(fname)
     libre = filing.xcelent.Xcel(wbk)
     sheet = libre.get_sheet(1)
     table = filing.xcelent.Xsheet(sheet)
-    idx = 0
     for row in table.rows:
-        idx += 1
-        shown = [simpler(item.value) if item.value else "-" for item in row]
-        #addup = [item.value for item in row if item.value]
+        shown = [
+            simpler(item.value) if item.value else "-" for item in row
+        ]
         if not shown:
             continue
         if len(shown[0]) <= 1:
             continue
         name, dash, dtstr = shown[0], shown[1], shown[2]
         assert name
+        if dash == "#":
+            continue
         assert dash == "-", f"Invalid null cell: {shown}"
         if dtstr == "-":
             continue
         if dtstr.endswith("-") and 1 <= dtstr.count("-") <= 2:
-            day, month = dtstr.rstrip("-").split("-")
+            day, month, year = dtstr.rstrip("-").split("-"), ""
         elif dtstr.count("-") == 2:
-            day, month, _ = dtstr.split("-")
+            day, month, year = dtstr.split("-")
         else:
             day, month = "0", "0"
         day, month = int(day), int(month)
-        astr = f"{month:02}.{day:02} {name:.<20} {dtstr}"
-        names.append(astr)
-    for astr in sorted(names):
-        out.write(astr + "\n")
+        astr = f"{month:02}.{day:02} {name:.<20} {dtstr}\n"
+        names.append((astr, int(year) if year else 0))
+    ours = ""
+    for astr, year in sorted(names):
+        out.write(astr)
+        line = astr
+        line = ("+" if year <= 1974 else "-") + "  " + astr
+        ours += line
+    if not outname:
+        return 0
+    with open(outname, "wb") as fdout:
+        fdout.write(bytes(ours.encode("ascii")))
     return 0
 
 def simpler(astr, default="") -> str:
@@ -83,7 +92,9 @@ def what_aniv() -> dict:
     home = environ["USERPROFILE"] if environ.get("HOME") is None else environ.get("HOME")
     path = os.path.join(home, ".config", "misc.conf")
     with open(path, "r", encoding="ascii") as fdin:
-        lines = [line.rstrip() for line in fdin.readlines() if line.strip() and line[0] != "#"]
+        lines = [
+            line.rstrip() for line in fdin.readlines() if line.strip() and line[0] != "#"
+        ]
         for line in lines:
             tup = line.split("=", maxsplit=1)
             if len(tup) <= 1:
