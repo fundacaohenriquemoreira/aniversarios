@@ -20,6 +20,12 @@ import filing.xcelent
 from waxpage.redit import char_map
 
 
+EXCL_EXPR = {
+    "Isabel": "RIP",
+    "Joao Araujo": "",
+}
+
+
 def main():
     """ Main function! """
     run(sys.stdout, sys.stderr, sys.argv[1:])
@@ -70,6 +76,8 @@ def dump_aniv(out, err, fname:str, outname:str="") -> int:
         out.write(astr)
         line = astr
         line = ("+" if year <= 1974 else "-") + "  " + astr
+        if excluded(line, EXCL_EXPR):
+            continue
         ours += line
     if not outname:
         return 0
@@ -103,6 +111,14 @@ def what_aniv() -> dict:
             left, right = tup[0].strip(), tup[1].strip()
             res[left] = right
     return res
+
+
+def excluded(astr:str, subexprs) -> bool:
+    for key in subexprs:
+        if " " + key in astr:
+            return True
+    return False
+
 
 # Main script
 if __name__ == "__main__":
