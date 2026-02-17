@@ -23,6 +23,7 @@ DEBUG = 0
 
 EXCL_EXPR = {
     "Isabel": "RIP",
+    "Joao A": "-",
 }
 
 
@@ -77,7 +78,8 @@ def dump_aniv(out, err, fname:str, outname:str="") -> int:
     for astr, year in sorted(names):
         out.write(astr)
         line = astr
-        line = ("+" if year <= 1974 else "-") + "  " + astr
+        pre = pre_from_key(astr, year)
+        line = pre + "  " + astr
         if excluded(line, EXCL_EXPR, debug=debug):
             continue
         ours += line
@@ -87,6 +89,14 @@ def dump_aniv(out, err, fname:str, outname:str="") -> int:
     with open(outname, "wb") as fdout:
         fdout.write(bytes(ours.encode("ascii")))
     return 0
+
+def pre_from_key(astr, year):
+    """ + marks 100, N marks 50, B marks 0
+    """
+    res = (
+        "+" if year <= 1974 else ("N" if year <= 2009 else "B")
+    )
+    return res
 
 def simpler(astr, default="") -> str:
     if not astr:

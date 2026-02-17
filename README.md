@@ -4,5 +4,8 @@ Origin:
 
 ## How To
 - Run `./aniversarios.py`
-  + it will read /opt/local/mydocs/drived/aniversarios.xlsx
-  + and output aniversarios.txt
+  + it will read `$HOME/aniversarios.xlsx`,
+  + or otherwise given by `$HOME/.config/misc.conf`
+- Output:
+  + at present directory: `aniversarios.txt`
+It displays in standard output the coarse reading from excel file.
